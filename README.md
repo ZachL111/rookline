@@ -1,43 +1,69 @@
 # rookline
 
-rookline is a Python project for chess and game engines. It focuses on this technical goal: Implement FEN parsing, legal candidate move scoring, and UCI-style command handling.
+`rookline` packages a practical chess and game engines exercise in Python. The emphasis is on deterministic behavior, a small public API, and examples that explain the tradeoffs.
 
-## Why it exists
+## How I Read Rookline
 
-Small engineering tools are easiest to trust when their rules are explicit, testable, and cheap to run locally. This repository packages a focused model with fixture data and a local verification path so behavior can be reviewed without external services.
+The useful thing to inspect here is how the same score rule is represented in code, metadata, and examples. If those three pieces disagree, the audit script should make the drift visible.
 
-## Features
+## Problem Shape
 
-- Deterministic policy scoring over fixture scenarios.
-- Clear accept or review decisions based on a documented threshold.
-- A command-line or local test path for quick validation.
-- Golden fixture data for repeatable checks.
-- Minimal dependencies and a compact project layout.
+This project keeps the domain idea close to the tests. That makes it useful as a reference implementation, a small experiment, or a starting point for a more specialized tool.
 
-## Architecture Notes
+## Scenario Walkthrough
 
-The core module exposes a small scoring API. Inputs are simple numeric signals: demand, capacity, latency, risk, and weight. The score uses a threshold of 165, risk penalty 5, latency penalty 4, and weight bonus 2. Tests exercise the public API against the fixture cases in `fixtures/cases.csv`.
+`examples/extended_cases.csv` adds six named cases. I kept the names plain so failures are easy to read in a terminal: baseline, pressure, surge, degraded, recovery, and boundary.
 
-## Setup
+## Internal Model
 
-Install the Python toolchain and run commands from the repository root.
+The core is a scoring model over demand, capacity, latency, risk, and weight. That keeps position state, move ranking, and turn flow in one explicit decision path. The threshold is 165, with risk penalty 5, latency penalty 4, and weight bonus 2. The Python code favors standard library tools and direct tests over framework weight.
 
-## Usage
+## Main Behaviors
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
-```
+- Models position state with deterministic scoring and explicit review decisions.
+- Uses fixture data to keep move ranking changes visible in code review.
+- Includes extended examples for turn flow, including `recovery` and `degraded`.
+- Documents search limits tradeoffs in `docs/operations.md`.
+- Runs locally with a single verification command and no external credentials.
 
-The verification script builds or runs the project and checks the fixture decisions.
-
-## Tests
+## How To Run It
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-## Limitations And Roadmap
+This runs the language-level build or test path against the compact fixture set.
 
-- The fixture set is intentionally small so it can be audited by hand.
-- Future work could add richer domain-specific input adapters.
-- The model is a local demonstration and does not claim production use.
+## Validation
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
+```
+
+The audit command checks repository structure and README constraints before it delegates to the verifier.
+
+## Repository Map
+
+- `src`: primary implementation
+- `tests`: verification harness
+- `fixtures`: compact golden scenarios
+- `examples`: expanded scenario set
+- `metadata`: project constants and verification metadata
+- `docs`: operations and extension notes
+- `scripts`: local verification and audit commands
+- `pyproject.toml`: Python project metadata
+
+## Follow-Up Work
+
+- Add malformed input fixtures so the failure path is as visible as the happy path.
+- Split the scoring constants into a typed configuration object and validate it before use.
+- Add a comparison mode that shows how decisions change when one signal is adjusted.
+- Add one more chess and game engines fixture that focuses on a malformed or borderline input.
+
+## Known Edges
+
+The scoring model is simple by design. More domain-specific behavior should be added through explicit adapters or extra fixture classes rather than hidden constants.
+
+## Run It Locally
+
+Use a normal shell with Python available on `PATH`. The verifier is written as a PowerShell script because the portfolio was assembled on Windows.
