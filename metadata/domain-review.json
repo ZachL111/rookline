@@ -1,0 +1,73 @@
+{
+  "repo": "rookline",
+  "language": "Python",
+  "category": "Chess and game engines",
+  "goal": "Implement FEN parsing, legal candidate move scoring, and UCI-style command handling.",
+  "review_model": {
+    "terms": [
+      "position pressure",
+      "move ordering",
+      "search width",
+      "endgame risk"
+    ],
+    "lanes": [
+      "ship",
+      "watch",
+      "hold"
+    ],
+    "score": "signal * 2 + slack + confidence - drag * 3",
+    "purpose": "surface the domain-specific cases that need the most careful review"
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "focus": "position pressure",
+      "signal": 58,
+      "slack": 47,
+      "drag": 22,
+      "confidence": 87,
+      "score": 184,
+      "lane": "ship"
+    },
+    {
+      "name": "stress",
+      "focus": "move ordering",
+      "signal": 70,
+      "slack": 41,
+      "drag": 18,
+      "confidence": 93,
+      "score": 220,
+      "lane": "ship"
+    },
+    {
+      "name": "edge",
+      "focus": "search width",
+      "signal": 80,
+      "slack": 23,
+      "drag": 20,
+      "confidence": 82,
+      "score": 205,
+      "lane": "ship"
+    },
+    {
+      "name": "recovery",
+      "focus": "endgame risk",
+      "signal": 58,
+      "slack": 50,
+      "drag": 13,
+      "confidence": 91,
+      "score": 218,
+      "lane": "ship"
+    },
+    {
+      "name": "stale",
+      "focus": "position pressure",
+      "signal": 89,
+      "slack": 43,
+      "drag": 19,
+      "confidence": 56,
+      "score": 220,
+      "lane": "ship"
+    }
+  ]
+}
